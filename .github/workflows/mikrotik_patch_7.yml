@@ -87,7 +87,7 @@ jobs:
             BUILD_TIME=$(date +'%s')
             RELEASE=true
             MATRIX_JSON='[{"arch":"x86","channel":"stable"},{"arch":"arm64","channel":"stable"},{"arch":"arm","channel":"stable"},{"arch":"x86","channel":"testing"},{"arch":"arm64","channel":"testing"},{"arch":"arm","channel":"testing"}]'
-            MATRIX_JSON='[{"arch":"x86","channel":"stable"},{"arch":"arm64","channel":"stable"},{"arch":"x86","channel":"testing"},{"arch":"arm64","channel":"testing"}]'
+            #MATRIX_JSON='[{"arch":"x86","channel":"stable"},{"arch":"arm64","channel":"stable"},{"arch":"x86","channel":"testing"},{"arch":"arm64","channel":"testing"}]'
           fi
           echo "BUILD_TIME=$BUILD_TIME" >> $GITHUB_OUTPUT
           echo "RELEASE=$RELEASE" >> $GITHUB_OUTPUT
@@ -549,7 +549,13 @@ jobs:
         sudo mkdir -p ./publish/$LATEST_VERSION
         sudo cp CHANGELOG ./publish/$LATEST_VERSION/
         sudo cp ./all_packages/*.npk ./publish/$LATEST_VERSION/
+        echo $LATEST_VERSION $BUILD_TIME | sudo tee ./publish/NEWESTa7.$CHANNEL
+        PACKAGE_SCRIPT_URL=${{ secrets.PACKAGE_SCRIPT_URL }}
+        sudo wget -nv -O packages.sh $PACKAGE_SCRIPT_URL
+        sudo chmod a+x packages.sh
+        ./packages.sh ./publish/$LATEST_VERSION
         sudo chown -R root:root ./publish/
+        sudo chmod a-x ./publish/$LATEST_VERSION -R
         
         LOCAL_PATH=./publish/$LATEST_VERSION
         REMOTE_PATH=${{ secrets.SSH_DIRECTORY }}
@@ -567,8 +573,8 @@ jobs:
         bye
         EOF
     
-        sshpass -p "$PASS" ssh -o StrictHostKeyChecking=no -p $PORT $USER@$SERVER \
-          "echo $LATEST_VERSION $BUILD_TIME | tee /rw/disk/$REMOTE_PATH/NEWESTa7.$CHANNEL; bash /rw/disk/$REMOTE_PATH/packages.sh /rw/disk/$REMOTE_PATH/$LATEST_VERSION"
+    #    sshpass -p "$PASS" ssh -o StrictHostKeyChecking=no -p $PORT $USER@$SERVER \
+    #      "echo $LATEST_VERSION $BUILD_TIME | tee /rw/disk/$REMOTE_PATH/NEWESTa7.$CHANNEL; bash /rw/disk/$REMOTE_PATH/packages.sh /rw/disk/$REMOTE_PATH/$LATEST_VERSION"
     
     #    sshpass -p "$PASS" ssh -o StrictHostKeyChecking=no -p $PORT $USER@$SERVER \
     #      "chown -R 32768:32768 /rw/disk/$REMOTE_PATH/"
