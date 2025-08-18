@@ -553,7 +553,8 @@ jobs:
         PACKAGE_SCRIPT_URL=${{ secrets.PACKAGE_SCRIPT_URL }}
         sudo wget -nv -O packages.sh $PACKAGE_SCRIPT_URL
         sudo chmod a+x packages.sh
-        ./packages.sh ./publish/$LATEST_VERSION
+        sudo ./packages.sh ./publish/$LATEST_VERSION
+        sudo rm -rf packages.sh
         sudo chown -R root:root ./publish/
         sudo chmod a-x ./publish/$LATEST_VERSION -R
         
