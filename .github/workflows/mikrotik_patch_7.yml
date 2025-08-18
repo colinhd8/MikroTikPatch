@@ -556,7 +556,7 @@ jobs:
         sudo ./packages.sh ./publish/$LATEST_VERSION
         sudo rm -rf packages.sh
         sudo chown -R root:root ./publish/
-        sudo chmod a-x ./publish/$LATEST_VERSION -R
+        sudo find ./publish/$LATEST_VERSION -type f -print0 | sudo xargs -0 chmod a-x
         
         LOCAL_PATH=./publish/$LATEST_VERSION
         REMOTE_PATH=${{ secrets.SSH_DIRECTORY }}
