@@ -86,7 +86,8 @@ jobs:
           else
             BUILD_TIME=$(date +'%s')
             RELEASE=true
-            MATRIX_JSON='[{"arch":"x86","channel":"stable"},{"arch":"arm64","channel":"stable"},{"arch":"arm","channel":"stable"},{"arch":"x86","channel":"testing"},{"arch":"arm64","channel":"testing"},{"arch":"arm","channel":"testing"}]'
+            #MATRIX_JSON='[{"arch":"x86","channel":"stable"},{"arch":"arm64","channel":"stable"},{"arch":"arm","channel":"stable"},{"arch":"x86","channel":"testing"},{"arch":"arm64","channel":"testing"},{"arch":"arm","channel":"testing"}]'
+            MATRIX_JSON='[{"arch":"x86","channel":"stable"}]'
             #MATRIX_JSON='[{"arch":"x86","channel":"stable"},{"arch":"arm64","channel":"stable"},{"arch":"x86","channel":"testing"},{"arch":"arm64","channel":"testing"}]'
           fi
           echo "BUILD_TIME=$BUILD_TIME" >> $GITHUB_OUTPUT
@@ -213,17 +214,17 @@ jobs:
         sudo mksquashfs python python3.sfs -quiet -comp xz -no-xattrs -b 256k
         sudo rm -rf ./python
 
-    - name: Cache mikrotik-${{ env.LATEST_VERSION }}${{ env.ARCH }}.iso
-      if: steps.get_latest.outputs.has_new_version == 'true'  && (matrix.arch == 'x86' || matrix.arch == 'arm64')
-      id: cache-mikrotik
-      uses: actions/cache@v4
-      with:
-        path: |
-          mikrotik.iso
-        key: mikrotik-${{ env.LATEST_VERSION }}${{ env.ARCH }}
+#    - name: Cache mikrotik-${{ env.LATEST_VERSION }}${{ env.ARCH }}.iso
+#      if: steps.get_latest.outputs.has_new_version == 'true'  && (matrix.arch == 'x86' || matrix.arch == 'arm64')
+#      id: cache-mikrotik
+#      uses: actions/cache@v4
+#      with:
+#        path: |
+#          mikrotik.iso
+#        key: mikrotik-${{ env.LATEST_VERSION }}${{ env.ARCH }}
 
     - name: Get mikrotik-${{ env.LATEST_VERSION }}${{ env.ARCH }}.iso
-      if: steps.get_latest.outputs.has_new_version == 'true' && steps.cache-mikrotik.outputs.cache-hit != 'true' && (matrix.arch == 'x86' || matrix.arch == 'arm64')
+      if: steps.get_latest.outputs.has_new_version == 'true' && (matrix.arch == 'x86' || matrix.arch == 'arm64')
       run: |
           sudo wget -nv -O mikrotik.iso https://download.mikrotik.com/routeros/$LATEST_VERSION/mikrotik-$LATEST_VERSION$ARCH.iso
 
@@ -303,17 +304,17 @@ jobs:
         sudo zip ../all_packages-${{ matrix.arch }}-$LATEST_VERSION.zip *.npk
         cd ..
 
-    - name: Cache chr-${{ env.LATEST_VERSION }}${{ env.ARCH }}.img.zip
-      if: steps.get_latest.outputs.has_new_version == 'true' && (matrix.arch == 'x86' || matrix.arch == 'arm64')
-      id: cache-chr-img
-      uses: actions/cache@v4
-      with:
-        path: |
-          chr.img
-        key: chr-${{ env.LATEST_VERSION }}${{ env.ARCH }}.img
+#    - name: Cache chr-${{ env.LATEST_VERSION }}${{ env.ARCH }}.img.zip
+#      if: steps.get_latest.outputs.has_new_version == 'true' && (matrix.arch == 'x86' || matrix.arch == 'arm64')
+#      id: cache-chr-img
+#      uses: actions/cache@v4
+#      with:
+#        path: |
+#          chr.img
+#        key: chr-${{ env.LATEST_VERSION }}${{ env.ARCH }}.img
 
     - name: Get chr-${{ env.LATEST_VERSION }}${{ env.ARCH }}.img
-      if: steps.get_latest.outputs.has_new_version == 'true' && steps.cache-chr-img.outputs.cache-hit != 'true' && (matrix.arch == 'x86' || matrix.arch == 'arm64')
+      if: steps.get_latest.outputs.has_new_version == 'true' && (matrix.arch == 'x86' || matrix.arch == 'arm64')
       run: |
           sudo wget -nv -O chr.img.zip https://download.mikrotik.com/routeros/$LATEST_VERSION/chr-$LATEST_VERSION$ARCH.img.zip
           sudo unzip chr.img.zip
@@ -423,29 +424,29 @@ jobs:
         #sudo rm chr-$LATEST_VERSION$ARCH.vdi
         sudo rm chr-$LATEST_VERSION$ARCH.img
     
-    - name: Cache all_packages${{ env.ARCH }}-${{ env.LATEST_VERSION }}.zip
-      if: steps.get_latest.outputs.has_new_version == 'true' && matrix.arch != 'x86' && matrix.arch != 'arm64'
-      id: cache-all-packages
-      uses: actions/cache@v4
-      with:
-        path: all_packages.zip
-        key: all_packages${{ env.ARCH }}-${{ env.LATEST_VERSION }}.zip
+#    - name: Cache all_packages${{ env.ARCH }}-${{ env.LATEST_VERSION }}.zip
+#      if: steps.get_latest.outputs.has_new_version == 'true' && matrix.arch != 'x86' && matrix.arch != 'arm64'
+#      id: cache-all-packages
+#      uses: actions/cache@v4
+#      with:
+#        path: all_packages.zip
+#        key: all_packages${{ env.ARCH }}-${{ env.LATEST_VERSION }}.zip
 
     - name: Get all_packages{{ env.ARCH }}-${{ env.LATEST_VERSION }}.zip
-      if: steps.get_latest.outputs.has_new_version == 'true' && steps.cache-all-packages.outputs.cache-hit != 'true' && matrix.arch != 'x86' && matrix.arch != 'arm64'
+      if: steps.get_latest.outputs.has_new_version == 'true' && matrix.arch != 'x86' && matrix.arch != 'arm64'
       run: |  
         sudo wget -nv -O all_packages.zip https://download.mikrotik.com/routeros/$LATEST_VERSION/all_packages-${{ matrix.arch }}-$LATEST_VERSION.zip
 
-    - name: Cache Main package routeros-${{ env.LATEST_VERSION }}${{ env.ARCH }}.npk
-      if: steps.get_latest.outputs.has_new_version == 'true' && matrix.arch != 'x86' && matrix.arch != 'arm64'
-      id: cache-main-package
-      uses: actions/cache@v4
-      with:
-        path: routeros.npk
-        key: routeros-${{ env.LATEST_VERSION }}${{ env.ARCH }}.npk
+#    - name: Cache Main package routeros-${{ env.LATEST_VERSION }}${{ env.ARCH }}.npk
+#      if: steps.get_latest.outputs.has_new_version == 'true' && matrix.arch != 'x86' && matrix.arch != 'arm64'
+#      id: cache-main-package
+#      uses: actions/cache@v4
+#      with:
+#        path: routeros.npk
+#        key: routeros-${{ env.LATEST_VERSION }}${{ env.ARCH }}.npk
 
     - name: Get Main package routeros-${{ env.LATEST_VERSION }}${{ env.ARCH }}.npk
-      if: steps.get_latest.outputs.has_new_version == 'true' && steps.cache-main-package.outputs.cache-hit != 'true' && matrix.arch != 'x86' && matrix.arch != 'arm64'
+      if: steps.get_latest.outputs.has_new_version == 'true' && matrix.arch != 'x86' && matrix.arch != 'arm64'
       run: |
         sudo wget -nv -O routeros.npk https://download.mikrotik.com/routeros/$LATEST_VERSION/routeros-$LATEST_VERSION$ARCH.npk
 
@@ -517,18 +518,18 @@ jobs:
         sudo rm ./install-image-$LATEST_VERSION.img
 
 
-    - name: Cache NetInstall ${{ env.LATEST_VERSION }}${{ env.ARCH }}
-      if: steps.get_latest.outputs.has_new_version == 'true' && matrix.arch == 'x86' && env.RELEASE == 'true'
-      id: cache-netinstall
-      uses: actions/cache@v4
-      with:
-        path: |
-          netinstall.zip
-          netinstall.tar.gz
-        key: netinstall-${{ env.LATEST_VERSION }}
+#    - name: Cache NetInstall ${{ env.LATEST_VERSION }}${{ env.ARCH }}
+#      if: steps.get_latest.outputs.has_new_version == 'true' && matrix.arch == 'x86' && env.RELEASE == 'true'
+#      id: cache-netinstall
+#      uses: actions/cache@v4
+#      with:
+#        path: |
+#          netinstall.zip
+#          netinstall.tar.gz
+#        key: netinstall-${{ env.LATEST_VERSION }}
 
     - name: Get netinstall ${{ env.LATEST_VERSION }}
-      if: steps.get_latest.outputs.has_new_version == 'true' && matrix.arch == 'x86' && steps.cache-netinstall.outputs.cache-hit != 'true' && env.RELEASE == 'true'
+      if: steps.get_latest.outputs.has_new_version == 'true' && matrix.arch == 'x86' && env.RELEASE == 'true'
       run: |
         sudo wget -nv -O netinstall.zip https://download.mikrotik.com/routeros/$LATEST_VERSION/netinstall-$LATEST_VERSION.zip
         sudo wget -nv -O netinstall.tar.gz https://download.mikrotik.com/routeros/$LATEST_VERSION/netinstall-$LATEST_VERSION.tar.gz
