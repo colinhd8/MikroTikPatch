@@ -331,7 +331,10 @@ def patch_squashfs(path,key_dict):
                 #    continue
                 data = open(file,'rb').read()
                 for old_public_key,new_public_key in key_dict.items():
-                    _data = replace_key(old_public_key,new_public_key,data,file)
+                    if _file =='loader':
+                        _data = data.replace(old_public_key,new_public_key)
+                    else:
+					    _data = replace_key(old_public_key,new_public_key,data,file)
                     if _data != data:
                         open(file,'wb').write(_data)
                 url_dict = {
