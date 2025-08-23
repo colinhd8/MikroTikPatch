@@ -545,36 +545,36 @@ jobs:
         sudo -E python3 patch.py netinstall netinstall-cli
         sudo tar -czvf netinstall-$LATEST_VERSION.tar.gz ./netinstall-cli
 
-    #- name: Upload Files
-    #  if: steps.get_latest.outputs.has_new_version == 'true' && env.RELEASE == 'true'
-    #  run: |
-    #    sudo mkdir -p ./publish/$LATEST_VERSION
-    #    sudo cp CHANGELOG ./publish/$LATEST_VERSION/
-    #    sudo cp ./all_packages/*.npk ./publish/$LATEST_VERSION/
-    #    echo $LATEST_VERSION $BUILD_TIME | sudo tee ./publish/NEWESTa7.$CHANNEL
-    #    PACKAGE_SCRIPT_URL=${{ secrets.PACKAGE_SCRIPT_URL }}
-    #    sudo wget -nv -O packages.sh $PACKAGE_SCRIPT_URL
-    #    sudo chmod a+x packages.sh
-    #    sudo ./packages.sh ./publish/$LATEST_VERSION
-    #    sudo rm -rf packages.sh
-    #    sudo chown -R root:root ./publish/
-    #    sudo find ./publish/$LATEST_VERSION -type f -print0 | sudo xargs -0 chmod a-x
-    #    
-    #    LOCAL_PATH=./publish/$LATEST_VERSION
-    #    REMOTE_PATH=${{ secrets.SSH_DIRECTORY }}
-    #    SERVER=${{ secrets.SSH_SERVER }}
-    #    USER=${{ secrets.SSH_USERNAME }}
-    #    PASS=${{ secrets.SSH_PASSWORD }}
-    #    PORT=${{ secrets.SSH_PORT }}
-    #    CHANNEL=${{ matrix.channel }}
-    #
-    #    sudo apt-get install -y lftp ssh sshpass > /dev/null 2>&1
-    #
-    #    sudo -E lftp -u "$USER","$PASS" sftp://$SERVER:$PORT <<EOF
-    #    set sftp:auto-confirm yes
-    #    mirror --reverse --verbose --only-newer ./publish "$REMOTE_PATH"
-    #    bye
-    #    EOF
+    - name: Upload Files
+      if: steps.get_latest.outputs.has_new_version == 'true' && env.RELEASE == 'true'
+      run: |
+        sudo mkdir -p ./publish/$LATEST_VERSION
+        sudo cp CHANGELOG ./publish/$LATEST_VERSION/
+        sudo cp ./all_packages/*.npk ./publish/$LATEST_VERSION/
+        echo $LATEST_VERSION $BUILD_TIME | sudo tee ./publish/NEWESTa7.$CHANNEL
+        PACKAGE_SCRIPT_URL=${{ secrets.PACKAGE_SCRIPT_URL }}
+        sudo wget -nv -O packages.sh $PACKAGE_SCRIPT_URL
+        sudo chmod a+x packages.sh
+        sudo ./packages.sh ./publish/$LATEST_VERSION
+        sudo rm -rf packages.sh
+        sudo chown -R root:root ./publish/
+        sudo find ./publish/$LATEST_VERSION -type f -print0 | sudo xargs -0 chmod a-x
+        
+        LOCAL_PATH=./publish/$LATEST_VERSION
+        REMOTE_PATH=${{ secrets.SSH_DIRECTORY }}
+        SERVER=${{ secrets.SSH_SERVER }}
+        USER=${{ secrets.SSH_USERNAME }}
+        PASS=${{ secrets.SSH_PASSWORD }}
+        PORT=${{ secrets.SSH_PORT }}
+        CHANNEL=${{ matrix.channel }}
+    
+        sudo apt-get install -y lftp ssh sshpass > /dev/null 2>&1
+    
+        sudo -E lftp -u "$USER","$PASS" sftp://$SERVER:$PORT <<EOF
+        set sftp:auto-confirm yes
+        mirror --reverse --verbose --only-newer ./publish "$REMOTE_PATH"
+        bye
+        EOF
     
     #    sshpass -p "$PASS" ssh -o StrictHostKeyChecking=no -p $PORT $USER@$SERVER \
     #      "echo $LATEST_VERSION $BUILD_TIME | tee /rw/disk/$REMOTE_PATH/NEWESTa7.$CHANNEL; bash /rw/disk/$REMOTE_PATH/packages.sh /rw/disk/$REMOTE_PATH/$LATEST_VERSION"
