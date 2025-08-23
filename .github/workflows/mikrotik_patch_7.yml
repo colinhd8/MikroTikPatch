@@ -151,7 +151,7 @@ jobs:
         fi
         echo "LATEST_VERSION=${LATEST_VERSION}" >> $GITHUB_ENV
         sudo apt-get update > /dev/null
-        
+
     - name: Get loader patch files
       if: steps.get_latest.outputs.has_new_version == 'true' && matrix.arch == 'arm'
       run: |
