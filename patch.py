@@ -24,7 +24,6 @@ def replace_key(old,new,data,name=''):
     data =  replace_chunks(old_chunks, new_chunks, data,name)
     arch = os.getenv('ARCH') or 'x86'
     arch = arch.replace('-', '')
-    #if arch in ['arm64','arm']:
     if arch in ['arm64']:
         old_chunks = [old[i:i+4] for i in range(0, len(old), 4)]
         new_chunks = [new[i:i+4] for i in range(0, len(new), 4)]
@@ -326,15 +325,12 @@ def patch_squashfs(path,key_dict):
         for _file in files:
             file = os.path.join(root,_file)
             if os.path.isfile(file):
-                #if _file =='loader':
-                #    patch_loader(file)
-                #    continue
+                if _file =='loader':
+                    patch_loader(file)
+                    continue
                 data = open(file,'rb').read()
                 for old_public_key,new_public_key in key_dict.items():
-                    if _file =='loader':
-                        _data = data.replace(old_public_key,new_public_key)
-                    else:
-                        _data = replace_key(old_public_key,new_public_key,data,file)
+                    _data = replace_key(old_public_key,new_public_key,data,file)
                     if _data != data:
                         open(file,'wb').write(_data)
                 url_dict = {
@@ -381,6 +377,8 @@ def patch_npk_package(package,key_dict):
         logo = os.path.join(extract_dir,"nova/lib/console/logo.txt")
         run_shell_command(f"sudo sed -i '1d' {logo}") 
         run_shell_command(f"sudo sed -i '8s#.*#  colin@gmail.com     https://github.com/colinhd8/MikroTikPatch#' {logo}")
+        loader = os.path.join(extract_dir,"nova/bin/loader")
+        run_shell_command(f"sudo copy loader {logo}") 
         print(f"pack {extract_dir} ...")
         run_shell_command(f"rm -f {squashfs_file}")
         run_shell_command(f"mksquashfs {extract_dir} {squashfs_file} -quiet -comp xz -no-xattrs -b 256k")
