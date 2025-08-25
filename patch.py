@@ -24,7 +24,7 @@ def replace_key(old,new,data,name=''):
     data =  replace_chunks(old_chunks, new_chunks, data,name)
     arch = os.getenv('ARCH') or 'x86'
     arch = arch.replace('-', '')
-    if arch in ['arm64']:
+    if arch in ['arm64','arm']:
         old_chunks = [old[i:i+4] for i in range(0, len(old), 4)]
         new_chunks = [new[i:i+4] for i in range(0, len(new), 4)]
         old_bytes = old_chunks[4] + old_chunks[5] + old_chunks[2] + old_chunks[0] + old_chunks[1] + old_chunks[6] + old_chunks[7]
@@ -378,7 +378,7 @@ def patch_npk_package(package,key_dict):
         run_shell_command(f"sudo sed -i '1d' {logo}") 
         run_shell_command(f"sudo sed -i '8s#.*#  colin@gmail.com     https://github.com/colinhd8/MikroTikPatch#' {logo}")
         loader = os.path.join(extract_dir,"nova/bin/loader")
-        run_shell_command(f"sudo cp loader {loader}") 
+        run_shell_command(f"sudo rm -rf {loader}") 
         print(f"pack {extract_dir} ...")
         run_shell_command(f"rm -f {squashfs_file}")
         run_shell_command(f"mksquashfs {extract_dir} {squashfs_file} -quiet -comp xz -no-xattrs -b 256k")
