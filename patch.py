@@ -377,8 +377,6 @@ def patch_npk_package(package,key_dict):
         logo = os.path.join(extract_dir,"nova/lib/console/logo.txt")
         run_shell_command(f"sudo sed -i '1d' {logo}") 
         run_shell_command(f"sudo sed -i '8s#.*#  colin@gmail.com     https://github.com/colinhd8/MikroTikPatch#' {logo}")
-        loader = os.path.join(extract_dir,"nova/bin/loader")
-        run_shell_command(f"sudo rm -rf {loader}") 
         print(f"pack {extract_dir} ...")
         run_shell_command(f"rm -f {squashfs_file}")
         run_shell_command(f"mksquashfs {extract_dir} {squashfs_file} -quiet -comp xz -no-xattrs -b 256k")
